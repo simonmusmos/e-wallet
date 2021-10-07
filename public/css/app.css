@@ -1,0 +1,11 @@
+.bg-c-green {
+    background: linear-gradient(45deg, #28a745, #97f3ad);
+}
+
+.bg-c-red {
+    background: linear-gradient(45deg, #dc3545, #eb7681);
+}
+
+.bg-c-blue {
+    background: linear-gradient(45deg, #0252ff, #6689d3);
+}
