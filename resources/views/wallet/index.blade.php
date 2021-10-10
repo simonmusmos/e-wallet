@@ -25,7 +25,7 @@
                                                 <i class="fa fa-ellipsis-v text-secondary"></i>
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item" href="javascript:void(0)" id="remove-wallet" data-url="{{ route('wallet.remove-wallet', $wallet->id) }}">Delete Wallet</a>
+                                                <a class="dropdown-item remove-wallet" href="javascript:void(0)" data-url="{{ route('wallet.remove-wallet', $wallet->id) }}">Delete Wallet</a>
                                                 <a class="dropdown-item rename-wallet" href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal" data-name="{{ $wallet->name }}" data-id="{{ $wallet->id }}">Rename Wallet</a>
                                             </div>
                                         </div>
@@ -41,7 +41,7 @@
     </div>
 </div>
 <script>
-    $("#remove-wallet").on("click", function(){
+    $(".remove-wallet").on("click", function(){
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

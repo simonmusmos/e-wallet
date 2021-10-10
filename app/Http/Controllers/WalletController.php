@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Wallet;
 use App\Models\Transaction;
+use App\Models\RequestToken;
 use Illuminate\Http\Request;
 use Carbon;
 
@@ -94,7 +95,7 @@ class WalletController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Wallet $wallet) {
+    public function destroy(Wallet $wallet, Request $request) {
         $this->checkAccess($request, $wallet);
         return $wallet->update(['is_deleted' => '1']);
     }
@@ -113,6 +114,19 @@ class WalletController extends Controller
         $hash = md5($time = Carbon\Carbon::now());
 
         while(count(Wallet::where('name', $hash)->get()) > 0){
+            $time = Carbon\Carbon::now();
+            $hash = md5($time = Carbon\Carbon::now());
+        }
+
+        return $hash;
+    }
+
+    private function generateRequestToken()
+    {
+        $time = Carbon\Carbon::now();
+        $hash = md5($time = Carbon\Carbon::now());
+
+        while(count(RequestToken::where('token', $hash)->get()) > 0){
             $time = Carbon\Carbon::now();
             $hash = md5($time = Carbon\Carbon::now());
         }
@@ -191,13 +205,43 @@ class WalletController extends Controller
                     "other_wallet" => $receiver->id
                 ]
             );
-            notify()->success('Welcome to Laravel Notify ⚡️');
+            
             return ["result" => true];
         }else{
             return ["result" => false, "message" => $request];
         }
+    }
 
+    public function requestMoney(Request $request, Wallet $wallet)
+    {
+        $this->checkAccess($request, $wallet);
+        $this->checkAccess($request, $wallet);
+        return view("wallet.request", [
+            "wallet"=>$wallet
+        ]);
+    }
+
+    public function generateRequestMoneyToken(Request $request, Wallet $wallet)
+    {
+        $this->checkAccess($request, $wallet);
+        $this->validate($request,[
+            'amount' => ['required','numeric','min:0.01']
+        ]);
+        $token = $this->generateRequestToken();
         
+        RequestToken::create(
+            [
+                "amount" => $request->amount,
+                "token" => $token,
+                "is_usable" => 1,
+                "wallet_id" => $wallet->id
+            ]
+        );
+            
+        return ["result" => true, "link" => route('wallet.open-request', $token)];
+    }
+
+    public function openRequest(Request $request, RequestToken $token){
 
     }
 

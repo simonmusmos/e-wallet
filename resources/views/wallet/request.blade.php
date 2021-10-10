@@ -13,7 +13,7 @@
                                     <div class="col-12">
                                         <div class="row pb-3">
                                             <div class="col-9">
-                                                <h3 class="card-text font-weight-normal">Send Money</h3>
+                                                <h3 class="card-text font-weight-normal">Request Money</h3>
                                             </div>
                                         </div>
                                         <form id="add_customer_form">
@@ -25,16 +25,15 @@
                                                 </strong>
                                             </span>
                                             <div class="form-group">
-                                                <label for="receiver">Receiver's Wallet Address:</label>
-                                                <input type="text" id="receiver" class="form-control">
-                                            </div>
-                                            <div class="form-group">
                                                 <label for="amount">Amount:</label>
                                                 <input type="number" id="amount" step="0.01" class="form-control">
                                             </div>
                                             
                                             <button type="submit" class="btn btn-success">Submit</button>
                                         </form>
+                                        <div class="alert alert-success d-none" id="success-alert">
+                                            Indicates a successful or positive action.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -52,15 +51,12 @@
 
         $("#error_body").removeClass("d-block");
 
-        var url = "{{ route('wallet.process-send', $wallet->id) }}";
+        var url = "{{ route('wallet.generate-request', $wallet->id) }}";
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        // $.post(url, function(data){
-        //     console.log(data);
-        // });
 
         $.ajax({
             url: url,
@@ -71,17 +67,10 @@
                 "address": $('#receiver').val()
             },
             success: function (data) {
-                toastr.options =
-                {
-                    "closeButton" : true,
-                    "progressBar" : true,
-                    "timeOut": 5000,
-                }
-                toastr.success("Money has been sent successfully, you will be returned to dashboard automatically.");
-
-                setTimeout(function() {
-                    window.location.replace('{{ route("wallet.view", $wallet->id) }}');
-                }, 5000);
+                console.log(data);
+                $("#success-alert").html("Please copy this link: " + data.link);
+                $("#add_customer_form").addClass("d-none");
+                $("#success-alert").removeClass("d-none");
             },
             error: function (data) {
                 
