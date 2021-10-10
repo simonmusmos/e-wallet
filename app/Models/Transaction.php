@@ -14,10 +14,15 @@ class Transaction extends Model
         'wallet_id',
         'is_incoming',
         'is_deleted',
-        'is_fraudulent'
+        'is_fraudulent',
+        'other_wallet'
     ];
 
     public function wallet(){
         return $this->belongsTo('App\Models\Wallet');
+    }
+
+    public function otherUser(){
+        return $this->hasOne('App\Models\User', 'other_user');
     }
 }

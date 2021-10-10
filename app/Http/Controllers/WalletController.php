@@ -156,6 +156,51 @@ class WalletController extends Controller
         ]);
     }
 
+    public function sendMoney(Request $request, Wallet $wallet)
+    {
+        $this->checkAccess($request, $wallet);
+        return view("wallet.send", [
+            "wallet"=>$wallet
+        ]);
+    }
+
+    public function processSendMoney(Request $request, Wallet $wallet)
+    {
+        $this->checkAccess($request, $wallet);
+        $this->validate($request,[
+            'amount' => ['required','numeric','min:0.01','max:'.number_format((float)$wallet->transactions->where("is_deleted",0)->where("is_incoming",1)->sum("amount"), 2, '.', '')]
+        ]);
+
+        $receiver = Wallet::where('wallet_address', $request->address)->first();
+
+        if($receiver) {
+            Transaction::create(
+                [
+                    "amount" => $request->amount,
+                    "is_incoming" => 1,
+                    "wallet_id" => $receiver->id,
+                    "other_wallet" => $wallet->id
+                ]
+            );
+
+            Transaction::create(
+                [
+                    "amount" => $request->amount,
+                    "is_incoming" => 0,
+                    "wallet_id" => $wallet->id,
+                    "other_wallet" => $receiver->id
+                ]
+            );
+            notify()->success('Welcome to Laravel Notify ⚡️');
+            return ["result" => true];
+        }else{
+            return ["result" => false, "message" => $request];
+        }
+
+        
+
+    }
+
     public function checkAccess(Request $request, Wallet $wallet){
         if($request->user()->id != $wallet->user_id) {
             return redirect()->route('unauthorized');

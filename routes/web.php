@@ -46,6 +46,8 @@ Route::group(['prefix' => 'wallet'], function(){
     Route::get('/{wallet}', 'WalletController@view')->name('wallet.view');
     Route::post('/{wallet}/remove-wallet', 'WalletController@destroy')->name('wallet.remove-wallet');
     Route::post('/{wallet}/rename', 'WalletController@renameWallet')->name('wallet.rename');
+    Route::get('/{wallet}/send', 'WalletController@sendMoney')->name('wallet.send');
+    Route::post('/{wallet}/process', 'WalletController@processSendMoney')->name('wallet.process-send');
     // Route::get('/edit/{supplier_id}', 'SupplierController@edit')->name('supplier.edit');
     // Route::post('/update/{supplier_id}', 'SupplierController@update')->name('supplier.update');
 });

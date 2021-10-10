@@ -26,6 +26,7 @@
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <a class="dropdown-item" href='{{ route("transaction.add", $wallet->id) }}'>Add Transaction</a>
+                                            <a class="dropdown-item" href='{{ route("wallet.send", $wallet->id) }}'>Send Money</a>
                                             <a class="dropdown-item rename-wallet" href="javascript:void(0)" data-name="{{ $wallet->name }}" data-id="{{ $wallet->id }}" data-toggle="modal" data-target="#exampleModal">Rename Wallet</a>
                                         </div>
                                     </div>
@@ -35,7 +36,7 @@
                         
                     </div>
                     <div class="col-4 mb-4">
-                        <div class="card border-0 shadow bg-secondary mr-0 get-transactions" style="border-radius: 1rem;" data-type="incoming">
+                        <div class="card border-0 shadow bg-secondary mr-0 get-transactions" style="border-radius: 1rem;" data-type="all">
                             <div class="card-body">
                                 <div class="row text-white">
                                     <div class="col-12 pr-0">
@@ -116,8 +117,8 @@
                                                                     Action
                                                                 </button>
                                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                                    <a class="dropdown-item" href="javascript:void(0)" id="remove-transaction" data-url="{{ route('transaction.remove-transaction', $transaction->id) }}">Remove Transaction</a>
-                                                                    <a class="dropdown-item" href="javascript:void(0)" id="mark-as-fraudulent" data-url="{{ route('transaction.mark-as-fraudulent', $transaction->id) }}">Mark as Fraudulent</a>
+                                                                    <a class="dropdown-item remove-transaction" href="javascript:void(0)" data-url="{{ route('transaction.remove-transaction', $transaction->id) }}">Remove Transaction</a>
+                                                                    <a class="dropdown-item mark-as-fraudulent" href="javascript:void(0)" data-url="{{ route('transaction.mark-as-fraudulent', $transaction->id) }}">Mark as Fraudulent</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -141,7 +142,7 @@
     // var removeTransactionURL = "";
     // var markAsFraudulentURL = "";
     var months = ["January", "February", "March","April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    $("#mark-as-fraudulent").on("click", function(){
+    $("div").on("click", "a.mark-as-fraudulent", function(){
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -171,7 +172,7 @@
         });
     });
 
-    $("#remove-transaction").on("click", function(){
+    $("div").on("click", "a.remove-transaction", function(){
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -206,11 +207,17 @@
             url: "{{ route('transaction.get', $wallet->id) }}?type="+$(this).data('type'),
             success:function(data)
             {
+                console.log(data);
                 var htmlBody = "";
-                $.each(data.data, function(index, item) {
+                $.each(data, function(index, item) {
                     var incomingTextCSS = "text-danger";
                     if(item.is_incoming) {
                         incomingTextCSS = "text-success";
+                    }
+
+                    var isFraudulent = "&nbsp";
+                    if(item.is_fraudulent) {
+                        isFraudulent = '<i class="fa fa-exclamation text-danger font-weight-light"></i>&nbsp';
                     }
 
                     var removeTransactionURL = '{{ route("transaction.remove-transaction", ":id") }}';
@@ -223,7 +230,7 @@
                     var formattedCreatedDate = months[createdDate.getMonth()] + " " + createdDate.getDate() + ", " + createdDate.getFullYear() + " " + createdDate.getHours() + ":" + createdDate.getMinutes() + ":" + createdDate.getSeconds()
 
                     htmlBody += "<tr>"+
-                                    "<th scope='row'>"+item.id+"</th>"+
+                                    "<th scope='row'>"+isFraudulent+""+item.id+"</th>"+
                                     "<td class=" + incomingTextCSS + ">$" + item.amount.toFixed(2) + "</td>"+
                                     "<td>" + formattedCreatedDate + "</td>"+
                                     "<td>"+
@@ -232,14 +239,14 @@
                                     "Action"+
                                     "</button>"+
                                     "<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>"+
-                                    "<a class='dropdown-item' href='javascript:void(0)' id='remove-transaction' data-url='"+removeTransactionURL+"'>Remove Transaction</a>"+
-                                    "<a class='dropdown-item' href='javascript:void(0)' id='mark-as-fraudulent' data-url='"+markAsFraudulentURL+"'>Mark as Fraudulent</a>"+
+                                    "<a class='dropdown-item remove-transaction' href='javascript:void(0)' data-url='"+removeTransactionURL+"'>Remove Transaction</a>"+
+                                    "<a class='dropdown-item mark-as-fraudulent' href='javascript:void(0)' data-url='"+markAsFraudulentURL+"'>Mark as Fraudulent</a>"+
                                     "</div>"+
                                     "</div>"+
                                     "</td>"+
                                     "</tr>";
                 });
-
+                console.log(htmlBody);
                 $("#transaction-table").html(htmlBody);
             }
         });
