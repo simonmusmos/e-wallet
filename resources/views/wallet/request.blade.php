@@ -68,7 +68,7 @@
             },
             success: function (data) {
                 console.log(data);
-                $("#success-alert").html("Please copy this link: " + data.link);
+                $("#success-alert").html("Please copy this link: " + data.link + '<br><a href="' + data.url + '">Go Back</a>');
                 $("#add_customer_form").addClass("d-none");
                 $("#success-alert").removeClass("d-none");
             },

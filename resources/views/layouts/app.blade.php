@@ -144,7 +144,7 @@
         </main>
     </div>
     <x:notify-messages />
-        @notifyJs
+    @notifyJs
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -177,6 +177,25 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="process-request-confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="process-request-confirmation-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="process-request-confirmation-label">Rename Wallet</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to continue sending money?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="process-request-confirmation-yes" data-id="">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
     <script>
         
 
@@ -205,10 +224,50 @@
                 type: "post",
                 dataType: "json",
                 data: {
-                    "name": $('#new-name').val(),
+                    "id": $('#new-name').val(),
                 },
                 success: function (data) {
                     location.reload();
+                },
+                error: function (data) {
+                    
+                    var errors = "";
+                    $.each(data.responseJSON.errors, function(index, item) {
+                        errors += "<li>" + item + "</li>";
+                    });
+                    $("#error-fields-rename").html(errors);
+                    $("#error-body-rename").addClass("d-block");
+                }
+            });
+        });
+
+        $("#process-request-confirmation-yes").on("click", function(){
+            var url = "{{ route('wallet.process-request') }}";
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: {
+                    "id": $(this).data("id"),
+                    "token": "{{ @$token->token }}"
+                },
+                success: function (data) {
+                    toastr.options =
+                    {
+                        "closeButton" : true,
+                        "progressBar" : true,
+                        "timeOut": 5000,
+                    }
+                    toastr.success("Money has been sent successfully, you will be returned to dashboard automatically.");
+
+                    setTimeout(function() {
+                        window.location.replace(data.url);
+                    }, 5000);
                 },
                 error: function (data) {
                     

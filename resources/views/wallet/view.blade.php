@@ -26,7 +26,12 @@
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <a class="dropdown-item" href='{{ route("transaction.add", $wallet->id) }}'>Add Transaction</a>
-                                            <a class="dropdown-item" href='{{ route("wallet.send", $wallet->id) }}'>Send Money</a>
+                                            @if(env('ENABLE_SEND_MONEY'))
+                                                <a class="dropdown-item" href='{{ route("wallet.send", $wallet->id) }}'>Send Money</a>
+                                            @endif
+                                            @if(env('ENABLE_REQUEST_MONEY'))
+                                                <a class="dropdown-item" href='{{ route("wallet.request", $wallet->id) }}'>Request Money</a>
+                                            @endif
                                             <!-- <a class="dropdown-item" href='{{ route("wallet.request", $wallet->id) }}'>Request Money</a> -->
                                             <a class="dropdown-item rename-wallet" href="javascript:void(0)" data-name="{{ $wallet->name }}" data-id="{{ $wallet->id }}" data-toggle="modal" data-target="#exampleModal">Rename Wallet</a>
                                         </div>

@@ -43,14 +43,19 @@ Route::group(['prefix' => 'wallet'], function(){
     Route::get('/add', 'WalletController@create')->name('wallet.add');
     Route::post('/create', 'WalletController@store')->name('wallet.create');
     Route::get('/', 'WalletController@index')->name('wallet.get');
-    Route::get('/{wallet}', 'WalletController@view')->name('wallet.view');
-    Route::get('/{wallet}/request', 'WalletController@requestMoney')->name('wallet.request');
-    Route::post('/{wallet}/generate-request', 'WalletController@generateRequestMoneyToken')->name('wallet.generate-request');
-    Route::post('/{wallet}/remove-wallet', 'WalletController@destroy')->name('wallet.remove-wallet');
-    Route::get('/{token}/open-request', 'WalletController@openRequest')->name('wallet.open-request');
-    Route::post('/{wallet}/rename', 'WalletController@renameWallet')->name('wallet.rename');
-    Route::get('/{wallet}/send', 'WalletController@sendMoney')->name('wallet.send');
-    Route::post('/{wallet}/process', 'WalletController@processSendMoney')->name('wallet.process-send');
+    Route::get('/open-request', 'WalletController@openRequest')->name('wallet.open-request');
+    Route::post('/process-request', 'WalletController@processRequest')->name('wallet.process-request');
+    
+    Route::group(['prefix' => '{wallet}'], function(){
+        Route::get('/', 'WalletController@view')->name('wallet.view');
+        Route::get('/request', 'WalletController@requestMoney')->name('wallet.request');
+        Route::post('/generate-request', 'WalletController@generateRequestMoneyToken')->name('wallet.generate-request');
+        Route::post('/remove-wallet', 'WalletController@destroy')->name('wallet.remove-wallet');
+        Route::post('/rename', 'WalletController@renameWallet')->name('wallet.rename');
+        Route::get('/send', 'WalletController@sendMoney')->name('wallet.send');
+        Route::post('/process', 'WalletController@processSendMoney')->name('wallet.process-send');
+    });
+    
     // Route::get('/edit/{supplier_id}', 'SupplierController@edit')->name('supplier.edit');
     // Route::post('/update/{supplier_id}', 'SupplierController@update')->name('supplier.update');
 });

@@ -212,9 +212,56 @@ class WalletController extends Controller
         }
     }
 
+    public function openRequest(Request $request){
+        $token = RequestToken::where('token', $request->token)->first();
+        return view("wallet.select-wallet", [
+            "wallets"=>$request->user()->wallets->where('is_deleted', 0),
+            "token"=>$token
+        ]);
+    }
+
+    public function processRequest(Request $request){
+        $token = RequestToken::where('token', $request->token)->where('is_usable', 1)->first();
+        $sendingWallet = Wallet::where('id', $request->id)->first();
+
+        if(!$token) {
+            return ["result" => false, "message" => "Token is invalid or already used."];
+        }
+        
+        if(!$sendingWallet) {
+            return ["result" => false, "message" => "Selected wallet is invalid."];
+        }
+
+        if((number_format((float)$sendingWallet->transactions->where("is_deleted",0)->where("is_incoming",1)->sum("amount"), 2, '.', '') - number_format((float)$sendingWallet->transactions->where("is_deleted",0)->where("is_incoming",0)->sum("amount"), 2, '.', '')) < $token->amount){
+            return ["result" => false, "message" => "Insufficient Balance."];
+        }
+        
+        Transaction::create(
+            [
+                "amount" => $token->amount,
+                "is_incoming" => 1,
+                "wallet_id" => $token->wallet_id,
+                "other_wallet" => $sendingWallet->id
+            ]
+        );
+
+        Transaction::create(
+            [
+                "amount" => $token->amount,
+                "is_incoming" => 0,
+                "wallet_id" => $sendingWallet->id,
+                "other_wallet" => $token->wallet_id
+            ]
+        );
+
+        $token->update(["is_usable" => 0]);
+
+        return ["result" => true, "url" => route("wallet.view", $sendingWallet->id)];
+    }
+
+
     public function requestMoney(Request $request, Wallet $wallet)
     {
-        $this->checkAccess($request, $wallet);
         $this->checkAccess($request, $wallet);
         return view("wallet.request", [
             "wallet"=>$wallet
@@ -238,11 +285,7 @@ class WalletController extends Controller
             ]
         );
             
-        return ["result" => true, "link" => route('wallet.open-request', $token)];
-    }
-
-    public function openRequest(Request $request, RequestToken $token){
-
+        return ["result" => true, "link" => route('wallet.open-request') . '?token=' . $token, "url" => route("wallet.view", $wallet->id)];
     }
 
     public function checkAccess(Request $request, Wallet $wallet){
