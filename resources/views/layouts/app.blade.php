@@ -62,34 +62,6 @@
                                 </li>
                             @endif
                         @else
-                            <!-- <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Customers') }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('customer.add') }}">
-                                        {{ __('Add Customer') }}
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('customer.get') }}">
-                                        {{ __('Manage Customers') }}
-                                    </a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Suppliers') }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('supplier.add') }}">
-                                        {{ __('Add Supplier') }}
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('supplier.get') }}">
-                                        {{ __('Manage Suppliers') }}
-                                    </a>
-                                </div>
-                            </li> -->
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Wallets') }}
@@ -104,18 +76,6 @@
                                     </a>
                                 </div>
                             </li>
-                            <!-- <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Users') }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    
-                                    <a class="dropdown-item" href="{{ route('user.get') }}">
-                                        {{ __('Manage Users') }}
-                                    </a>
-                                </div>
-                            </li> -->
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
